@@ -1,0 +1,48 @@
+{
+  "Name": "acctact_gcsToBq_bqHook",
+  "Id": "acctact_gcsToBq_bqHook",
+  "Description": "GCS to BQ Pre Staging load",
+  "Type": "load file from gcs",
+  "opsgeniePriority": "P3",
+  "Params": {
+    "hook": {
+      "sourceFormat": "txt",
+      "datasetId": "db_bvsn_actv_raw_tbls",
+      "tableId": "acctact",
+      "sourceUris": "bvsn_actv/ACCTACT.yyyymmdd*.VB2B",
+      "fixedWidth": "true",
+      "fieldDelimiter": "|",
+      "gcp_conn_id": "gcp_conn_id_gk1v-edwpr",
+      "projectId": "projectId",
+      "skipLeadingRows": "0",
+      "numSourceFilesPerRun": "1",
+      "maxBadRecords": "0",
+      "writeDisposition": "WRITE_TRUNCATE",
+      "archiveLocation": "bvsn_actv",
+      "createDisposition": "CREATE_NEVER",
+      "ignoreUnknownValues": "true",
+      "encoding": "UTF-8",
+      "colSpecification": "1,4,2,10,5,10,2,60,1,9,20,25,1,5,2,2,8,2,1,10"
+    },
+    "obs": {
+      "gcp_project": "projectId",
+      "sub_process": "acctact_gcsToBq_bqHook",
+      "keyvalue": "NA",
+      "project_name": "EDW_MODERNIZATION",
+      "source_type": "File",
+      "source_name": "ACCTACT.yyyymmdd*.VB2B",
+      "target_name": "projectId.db_bvsn_actv_raw_tbls.acctact",
+      "target_type": "table",
+      "tool_name": "GCP",
+      "source_environment": "GCP_GCS",
+      "source_servername": "gcs_servername",
+      "target_environment": "GCP_BQ",
+      "target_servername": "bq_servername",
+      "scheduler": "airflow",
+      "system_name": "consumer_wls_ingestion",
+      "logger_name": "dof_gcp_process_log",
+      "rerun_indicator": "NA"
+    }
+  },
+  "OkTo": "vsn_actv_acctact"
+}

@@ -1,0 +1,40 @@
+{
+  "Name": "{{ lob }}_{{ espx_app_name }}_{{ espx_job_name }}_{{ target_table }}",
+  "Type": "{{ template_type }}",
+  "Start_Date": "datetime.now(tz)",
+  "Schedule_interval": "{{ schedule_interval }}",
+  "max_active_runs": "1",
+  "Catchup": "True",
+  "Project_space": "vz-it-{{ vsad }}-edw{{ env }}-0",
+  "composer": "{{ composer }}",
+  "Timezone": "EST",
+  "default_args": {
+    "owner": "'airflow'",
+    "wait_for_downstream": "True",
+    "depends_on_past": "False"
+  },
+  "description": "The following DAG includes only the Ingestion part of the orchestration process",
+  "custom_tags": [
+    "program_name:EDW Modernization",
+    "lob:{{ lob_code }}",
+    "sub_lob:{{ sub_lob }}",
+    "vsad:{{ vsad }}",
+    "legacy_application_name:{{ espx_job_name }}",
+    "product_type:Core"
+    {{ custom_tags }}
+  ],
+  "Steps": [
+    {
+      "Name": "Start",
+      "Id": "start",
+      "Description": "This stage indicates the starting point of the task relationship in the dag",
+      "OkTo": "end"
+    },
+    {
+      "Name": "End",
+      "Id": "end",
+      "Description": "This stage indicates the ending point of the task relationship in the dag",
+      "OkTo": "end"
+    }
+  ]
+}

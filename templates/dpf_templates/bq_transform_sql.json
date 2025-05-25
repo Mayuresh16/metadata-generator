@@ -1,0 +1,34 @@
+{
+  "Name": "{{ target_table }}_bq_transform_load",
+  "Id": "{{ target_table }}_bq_transform_load",
+  "Description": "sql query execution",
+  "Type": "run sql query from file",
+  "opsgeniePriority": "{{ opsgenie_priority }}",
+  "Params": {
+    "hook": {
+      "gcp_conn_id": "{{ gcp_conn_id }}",
+      "sqlFile": "{{ lob }}/{{ espx_app_name }}/sql/{{ sql_filename }}.sql",
+      "useLegacySql": "false",
+      "projectId": "{{ project_id }}"
+    },
+    "obs": {
+      "sub_process": "{{ target_table }}_bq_transform_load",
+      "keyvalue": "NA",
+      "project_name": "EDW_MODERNIZATION",
+      "source_type": "table",
+      "source_name": "{{ obs_source_tables }}",
+      "target_name": "{{ obs_target_tables }}",
+      "target_type": "table",
+      "tool_name": "GCP",
+      "source_environment": "GCP_BQ",
+      "source_servername": "bq_servername",
+      "target_environment": "GCP_BQ",
+      "target_servername": "bq_servername",
+      "scheduler": "airflow",
+      "system_name": "consumer_{{ lob }}_ingestion",
+      "logger_name": "dof_gcp_process_log",
+      "rerun_indicator": "NA"
+    }
+  },
+  "OkTo": "{{ next_downstream_task_id }}"
+}

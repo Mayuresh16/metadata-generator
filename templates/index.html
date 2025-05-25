@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Your DPF JSON Metadata</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="template_type_selection">Select Template Type:</label>
+                <select id="template_type_selection" name="template_type_selection" onchange="showHideForms()">
+                    <option value="">-- Please Select --</option>
+                    <option value="Curation DAG Template" {% if selected_template == 'Curation DAG Template' %}selected{% endif %}>Curation DAG Template</option>
+                    <option value="Trigger DAG" {% if selected_template == 'Trigger DAG' %}selected{% endif %}>Trigger DAG</option>
+                    <option value="External Task Sensor" {% if selected_template == 'External Task Sensor' %}selected{% endif %}>External Task Sensor</option>
+                    <option value="File Watcher" {% if selected_template == 'File Watcher' %}selected{% endif %}>File Watcher</option>
+                    <option value="BQ Transform SQL" {% if selected_template == 'BQ Transform SQL' %}selected{% endif %}>BQ Transform SQL</option>
+                </select>
+            </div>
+
+            <div id="triggerDagSection" class="form-section" style="display: none;">
+                <h3>Trigger DAG Details</h3>
+                <div class="form-group">
+                    <label for="lob">LOB:</label>
+                    <select id="lob" name="lob">
+                        <option value="WLS" selected>WLS</option>
+                        <option value="WLN">WLN</option>
+                        <option value="VBG">VBG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="downstream_dag_id">Downstream DAG ID:</label>
+                    <input type="text" id="downstream_dag_id" name="downstream_dag_id">
+                </div>
+                <div class="form-group">
+                    <label for="opsgenie_priority">Opsgenie Priority:</label>
+                    <select id="opsgenie_priority" name="opsgenie_priority">
+                        <option value="P1">P1</option>
+                        <option value="P2">P2</option>
+                        <option value="P3" selected>P3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="next_downstream_task_id">Next Downstream Task ID:</label>
+                    <input type="text" id="next_downstream_task_id" name="next_downstream_task_id">
+                </div>
+            </div>
+
+            <div id="curationDagSection" class="form-section" style="display: none;">
+                <h3>Curation DAG Template Details</h3>
+                <div class="form-group">
+                    <label for="environment">Environment:</label>
+                    <select id="environment" name="environment">
+                        <option value="DO" selected>DO</option>
+                        <option value="PR">PR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lob">LOB:</label>
+                    <select id="lob" name="lob">
+                        <option value="WLS" selected>WLS</option>
+                        <option value="WLN">WLN</option>
+                        <option value="VBG">VBG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="espx_app_name">ESPX App Name:</label>
+                    <input type="text" id="espx_app_name" name="espx_app_name">
+                </div>
+                <div class="form-group">
+                    <label for="espx_job_name">ESPX Job Name:</label>
+                    <input type="text" id="espx_job_name" name="espx_job_name">
+                </div>
+                <div class="form-group">
+                    <label for="target_table">Target Table Name:</label>
+                    <input type="text" id="target_table" name="target_table">
+                </div>
+                <div class="form-group">
+                    <label for="curation_template_type">Template Type:</label>
+                    <select id="curation_template_type" name="curation_template_type">
+                        <option value="Batch" selected>Batch</option>
+                        <option value="Ingestion Curation">Ingestion Curation</option>
+                        <option value="Generic">Generic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="schedule_interval">Schedule Interval:</label>
+                    <input type="text" id="schedule_interval" name="schedule_interval" placeholder="e.g., @daily, 0 0 * * *">
+                </div>
+                <div class="form-group">
+                    <label for="project_space">Project Space:</label>
+                    <select id="project_space" name="project_space">
+                        <option value="GK1V" selected>GK1V</option>
+                        <option value="ZDWV">ZDWV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Custom Tags (multiple allowed):</label>
+                    <div id="custom_tags_container">
+                        <input type="text" name="custom_tags" class="custom-tags-input">
+                    </div>
+                    <button type="button" onclick="addCustomTags()" class="add-button">Add Custom Tag</button>
+                </div>
+            </div>
+
+            <div id="externalTaskSensorSection" class="form-section" style="display: none;">
+                <h3>External Task Sensor Details</h3>
+                <div class="form-group">
+                    <label for="external_dag_id">External DAG ID:</label>
+                    <input type="text" id="external_dag_id" name="external_dag_id">
+                </div>
+                <div class="form-group">
+                    <label for="next_downstream_task_id_sensor">Next Downstream Task ID:</label>
+                    <input type="text" id="next_downstream_task_id_sensor" name="next_downstream_task_id_sensor">
+                </div>
+                <div class="form-group">
+                    <label for="dependency_timeout">Dependency Timeout (seconds):</label>
+                    <input type="number" id="dependency_timeout" name="dependency_timeout">
+                </div>
+                <div class="form-group">
+                    <label for="opsgenie_priority_sensor">Opsgenie Priority:</label>
+                    <select id="opsgenie_priority_sensor" name="opsgenie_priority_sensor">
+                        <option value="P1">P1</option>
+                        <option value="P2">P2</option>
+                        <option value="P3" selected>P3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="fileWatcherSection" class="form-section" style="display: none;">
+                <h3>File Watcher Details</h3>
+                <div class="form-group">
+                    <label for="task_id">Task ID:</label>
+                    <input type="text" id="task_id" name="task_id">
+                </div>
+                <div class="form-group">
+                    <label>Objects (multiple allowed):</label>
+                    <div id="objects_container">
+                        <input type="text" name="object" class="object-input">
+                    </div>
+                    <button type="button" onclick="addFileWatcherObject()" class="add-button">Add Another Object</button>
+                </div>
+                <div class="form-group">
+                    <label for="timeout">Timeout (seconds):</label>
+                    <input type="number" id="timeout" name="timeout">
+                </div>
+                <div class="form-group">
+                    <label for="poke_interval">Poke Interval (seconds):</label>
+                    <input type="number" id="poke_interval" name="poke_interval">
+                </div>
+                <div class="form-group">
+                    <label>Skip on File Not Found:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="skip_true" name="skip_on_file_not_found" value="True">
+                        <label for="skip_true">True</label>
+                        <input type="radio" id="skip_false" name="skip_on_file_not_found" value="False" checked>
+                        <label for="skip_false">False</label>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="lob_file_watcher">LOB:</label>
+                    <select id="lob_file_watcher" name="lob_file_watcher">
+                        <option value="WLS" selected>WLS</option>
+                        <option value="WLN">WLN</option>
+                        <option value="VBG">VBG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="opsgenie_priority_file_watcher">Opsgenie Priority:</label>
+                    <select id="opsgenie_priority_file_watcher" name="opsgenie_priority_file_watcher">
+                        <option value="P1">P1</option>
+                        <option value="P2">P2</option>
+                        <option value="P3" selected>P3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="next_downstream_task_id_file_watcher">Next Downstream Task ID:</label>
+                    <input type="text" id="next_downstream_task_id_file_watcher" name="next_downstream_task_id_file_watcher">
+                </div>
+            </div>
+
+            <div id="bqTransformSqlSection" class="form-section" style="display: none;">
+                <h3>BQ Transform SQL Details</h3>
+                <div class="form-group">
+                    <label for="lob_bq_transform">LOB:</label>
+                    <select id="lob_bq_transform" name="lob_bq_transform">
+                        <option value="WLS" selected>WLS</option>
+                        <option value="WLN">WLN</option>
+                        <option value="VBG">VBG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="target_table_bq_transform">Target Table Name:</label>
+                    <input type="text" id="target_table_bq_transform" name="target_table_bq_transform">
+                </div>
+                <div class="form-group"> {# NEW FIELD #}
+                    <label for="sql_filename_bq_transform">SQL Filename:</label>
+                    <input type="text" id="sql_filename_bq_transform" name="sql_filename_bq_transform">
+                </div>
+                <div class="form-group"> {# NEW FIELD #}
+                    <label for="espx_app_name_bq_transform">ESPX App Name:</label>
+                    <input type="text" id="espx_app_name_bq_transform" name="espx_app_name_bq_transform">
+                </div>
+                <div class="form-group">
+                    <label for="opsgenie_priority_bq_transform">Opsgenie Priority:</label>
+                    <select id="opsgenie_priority_bq_transform" name="opsgenie_priority_bq_transform">
+                        <option value="P1">P1</option>
+                        <option value="P2">P2</option>
+                        <option value="P3" selected>P3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gcp_conn_id_bq_transform">GCP Connection ID:</label>
+                    <select id="gcp_conn_id_bq_transform" name="gcp_conn_id_bq_transform">
+                        <option value="gcp_conn_id_gk1v-edwdo" selected>gcp_conn_id_gk1v-edwdo</option>
+                        <option value="gcp_conn_id_gk1v-edwpr">gcp_conn_id_gk1v-edwpr</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="project_id_bq_transform">Project ID:</label>
+                    <select id="project_id_bq_transform" name="project_id_bq_transform">
+                        <option value="gk1v-edwdo_project_id" selected>gk1v-edwdo_project_id</option>
+                        <option value="gk1v-edwpr_project_id">gk1v-edwpr_project_id</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Source Tables (multiple allowed):</label>
+                    <div id="obs_source_tables_container">
+                        <input type="text" name="obs_source_table" class="source-table-input">
+                    </div>
+                    <button type="button" onclick="addSourceTable()" class="add-button">Add Another Source Table</button>
+                </div>
+                <div class="form-group">
+                    <label>Target Tables (multiple allowed):</label>
+                    <div id="obs_target_tables_container">
+                        <input type="text" name="obs_target_table" class="target-table-input">
+                    </div>
+                    <button type="button" onclick="addTargetTable()" class="add-button">Add Another Target Table</button>
+                </div>
+                <div class="form-group">
+                    <label for="next_downstream_task_id_bq_transform">Next Downstream Task ID:</label>
+                    <input type="text" id="next_downstream_task_id_bq_transform" name="next_downstream_task_id_bq_transform">
+                </div>
+            </div>
+
+            <button type="submit">Generate JSON</button>
+        </form>
+
+        {% if json_output %}
+        <h2>Generated JSON:</h2>
+        <div class="json-output-container">
+            <pre class="json-output" id="jsonOutputPre">{{ json_output }}</pre>
+            <button class="copy-button" onclick="copyJson()">Copy JSON</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showHideForms() {
+            var selection = document.getElementById("template_type_selection").value;
+            document.getElementById("triggerDagSection").style.display = "none";
+            document.getElementById("curationDagSection").style.display = "none";
+            document.getElementById("externalTaskSensorSection").style.display = "none";
+            document.getElementById("fileWatcherSection").style.display = "none";
+            document.getElementById("bqTransformSqlSection").style.display = "none";
+
+            // Reset input values when switching sections
+            resetFormInputs("triggerDagSection");
+            resetFormInputs("curationDagSection");
+            resetFormInputs("externalTaskSensorSection");
+            resetFormInputs("fileWatcherSection");
+            resetFormInputs("bqTransformSqlSection");
+
+            // Remove dynamically added inputs for File Watcher
+            var objectsContainer = document.getElementById('objects_container');
+            if (objectsContainer) {
+                while (objectsContainer.children.length > 1) { // Keep the first input
+                    objectsContainer.removeChild(objectsContainer.lastChild);
+                }
+            }
+            // Custom Tags
+            var customTagsContainer = document.getElementById('custom_tags_container');
+            if (customTagsContainer) {
+                while (customTagsContainer.children.length > 1) {
+                    customTagsContainer.removeChild(customTagsContainer.lastChild);
+                }
+            }
+
+            // Remove dynamically added inputs for BQ Transform SQL
+            var sourceTablesContainer = document.getElementById('obs_source_tables_container');
+            if (sourceTablesContainer) {
+                while (sourceTablesContainer.children.length > 1) {
+                    sourceTablesContainer.removeChild(sourceTablesContainer.lastChild);
+                }
+            }
+            var targetTablesContainer = document.getElementById('obs_target_tables_container');
+            if (targetTablesContainer) {
+                while (targetTablesContainer.children.length > 1) {
+                    targetTablesContainer.removeChild(targetTablesContainer.lastChild);
+                }
+            }
+
+
+            if (selection === "Trigger DAG") {
+                document.getElementById("triggerDagSection").style.display = "block";
+            } else if (selection === "Curation DAG Template") {
+                document.getElementById("curationDagSection").style.display = "block";
+            } else if (selection === "External Task Sensor") {
+                document.getElementById("externalTaskSensorSection").style.display = "block";
+            } else if (selection === "File Watcher") {
+                document.getElementById("fileWatcherSection").style.display = "block";
+            } else if (selection === "BQ Transform SQL") {
+                document.getElementById("bqTransformSqlSection").style.display = "block";
+            }
+        }
+
+        function resetFormInputs(sectionId) {
+            var section = document.getElementById(sectionId);
+            if (!section) return;
+
+            var inputs = section.querySelectorAll('input, select');
+            inputs.forEach(function(input) {
+                if (input.type === 'text' || input.type === 'number') {
+                    input.value = '';
+                } else if (input.tagName === 'SELECT') {
+                    if (input.name === 'environment') {
+                        input.value = 'PR';
+                    } else if (input.name.startsWith('lob')) {
+                        input.value = 'WLS';
+                    } else if (input.name === 'project_space') {
+                        input.value = 'GK1V';
+                    } else if (input.name.startsWith('opsgenie_priority')) {
+                        input.value = 'P3';
+                    } else if (input.name === 'gcp_conn_id_bq_transform') {
+                        input.value = 'gcp_conn_id_gk1v-edwdo';
+                    } else if (input.name === 'project_id_bq_transform') {
+                        input.value = 'gk1v-edwdo_project_id';
+                    }
+                    else {
+                        input.selectedIndex = 0;
+                    }
+                } else if (input.type === 'radio') {
+                    if (input.name === 'skip_on_file_not_found' && input.value === 'False') {
+                        input.checked = true;
+                    } else {
+                        input.checked = false;
+                    }
+                }
+            });
+        }
+
+        function addFileWatcherObject() {
+            var container = document.getElementById('objects_container');
+            var newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'object';
+            newInput.className = 'object-input';
+            container.appendChild(newInput);
+        }
+
+        function addCustomTags() {
+            var container = document.getElementById('custom_tags_container');
+            var newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'custom_tags';
+            newInput.className = 'custom-tags-input';
+            container.appendChild(newInput);
+        }
+
+        function addSourceTable() {
+            var container = document.getElementById('obs_source_tables_container');
+            var newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'obs_source_table';
+            newInput.className = 'source-table-input';
+            container.appendChild(newInput);
+        }
+
+        function addTargetTable() {
+            var container = document.getElementById('obs_target_tables_container');
+            var newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'obs_target_table';
+            newInput.className = 'target-table-input';
+            container.appendChild(newInput);
+        }
+
+        function copyJson() {
+            var jsonText = document.getElementById("jsonOutputPre").innerText;
+            navigator.clipboard.writeText(jsonText).then(function() {
+                alert("JSON copied to clipboard!");
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+                alert("Failed to copy JSON. Please try again or copy manually.");
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', showHideForms);
+    </script>
+</body>
+</html>

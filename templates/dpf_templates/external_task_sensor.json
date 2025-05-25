@@ -1,0 +1,17 @@
+{
+  "Name": "{{ external_dag_id }}_dag_dependency_check",
+  "Id": "{{ external_dag_id }}_dag_dependency_check",
+  "Type": "dag dependency check",
+  "Description": "This operator checks for successful execution of upstream dag",
+  "opsgeniePriority": "{{ opsgenie_priority }}",
+  "dependency_poke_interval": 300,
+  "dependency_mode": "reschedule",
+  "dependency_ext_dag": "{{ external_dag_id }}",
+  "dependency_for_any_last_exec_flag": 1,
+  "dependency_delta_hour": 0,
+  "dependency_delta": 0,
+  "dependency_threshold": 0,
+  "dependency_dag_query_days": 0,
+  "dependency_timeout": {{ dependency_timeout }},
+  "OkTo": "{{ next_downstream_task_id }}"
+}

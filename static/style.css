@@ -1,0 +1,155 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    min-height: 100vh;
+    margin: 20px; /* Add some margin around the container */
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px; /* Slightly wider for more content */
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 16px; /* Ensure readability */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 20px; /* Space above button */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.json-output-container {
+    position: relative; /* For positioning the copy button */
+    margin-top: 20px;
+    border: 1px solid #ddd; /* Add a subtle border around the output area */
+    border-radius: 4px;
+    background-color: #eee; /* Background for the code block */
+    padding-bottom: 40px; /* Make space for the copy button */
+}
+
+.json-output {
+    padding: 15px;
+    overflow-x: auto; /* For long JSON lines */
+    white-space: pre-wrap; /* Preserve whitespace and wrap long lines */
+    word-wrap: break-word; /* Break long words */
+    color: #333;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for JSON */
+    max-height: 400px; /* Limit height and add scroll if needed */
+    margin: 0; /* Remove default margin from pre */
+}
+
+.copy-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: auto; /* Allow button to size to content */
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #28a745; /* Green for copy */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10; /* Ensure it's above the pre tag */
+    margin-top: 0; /* Override previous button margin */
+}
+
+.copy-button:hover {
+    background-color: #218838;
+}
+
+
+.form-section {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Styles for radio buttons to be horizontal */
+.radio-group {
+    display: flex;
+    gap: 15px; /* Space between radio buttons */
+    margin-top: 5px;
+    align-items: center; /* Vertically align items */
+}
+
+.radio-group input[type="radio"] {
+    width: auto; /* Allow radio button to be its natural width */
+    margin-right: 5px;
+}
+
+.radio-group label {
+    margin-bottom: 0; /* Remove bottom margin from label */
+    font-weight: normal; /* Labels for radio buttons don't need to be bold */
+    display: inline-block; /* Keep label next to radio */
+}
+
+/* Styles for the "Add Another Object" button */
+button.add-button {
+    background-color: #6c757d; /* A grey color */
+    width: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+button.add-button:hover {
+    background-color: #5a6268;
+}
+
+/* Style for dynamically added object inputs */
+input.object-input {
+    margin-bottom: 5px; /* Space between multiple object inputs */
+}

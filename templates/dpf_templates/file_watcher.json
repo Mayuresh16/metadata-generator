@@ -1,0 +1,33 @@
+{
+  "Name": "fw_{{ task_id }}",
+  "Id": "fw_{{ task_id }}",
+  "Description": "This operator checks touch file presence",
+  "Type": "GCS File sensor check",
+  "opsgeniePriority": "{{ opsgenie_priority }}",
+  "Params": {
+    "hook": {
+      "fileSensor": "true",
+      "gcsBucket": "SOURCE_URI_BUCKET",
+      "object": {{ objects }},
+      "timeout": "{{ timeout }}",
+      "poke_interval": "{{ poke_interval }}",
+      "abandon_flag": "{{ skip_on_file_not_found }}"
+    },
+    "obs": {
+      "gcp_project": "projectId",
+      "sub_process": "fw_{{ task_id }}",
+      "keyvalue": "NA",
+      "project_name": "EDW_MODERNIZATION",
+      "source_type": "File",
+      "source_name": "{{ objects_as_csv_string }}",
+      "tool_name": "GCP",
+      "source_environment": "GCP_GCS",
+      "source_servername": "gcs_servername",
+      "scheduler": "airflow",
+      "system_name": "consumer_{{ lob }}_ingestion",
+      "logger_name": "dof_gcp_process_log",
+      "rerun_indicator": "NA"
+    }
+  },
+  "OkTo": "{{ next_downstream_task_id }}"
+}

@@ -1,0 +1,25 @@
+{
+  "Name": "{{ downstream_dag_id }}_trigger_dag",
+  "Id": "{{ downstream_dag_id }}_trigger_dag",
+  "Description": "This stage indicates triggering an external dag",
+  "Type": "trigger external dag",
+  "opsgeniePriority": "{{ opsgenie_priority }}",
+  "Params": {
+    "hook": {
+      "trigger_dag_id": "{{ downstream_dag_id }}",
+      "wait_for_completion": "false"
+    },
+    "obs": {
+      "system_name": "consumer_{{ lob }}_trigger",
+      "gcp_project": "projectId",
+      "sub_process": "{{ downstream_dag_id }}_trigger_dag",
+      "trigger_dag_id": "{{ downstream_dag_id }}",
+      "keyvalue": "NA",
+      "project_name": "EDW_MODERNIZATION",
+      "tool_name": "GCP",
+      "scheduler": "airflow",
+      "logger_name": "dof_gcp_process_log"
+    }
+  },
+  "OkTo": "{{ next_downstream_task_id }}"
+}
